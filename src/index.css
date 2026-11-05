@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@75..125,100..900&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-primitivo: #000000;
+  --color-cuero: #241d14;
+  --color-arena: #beaa9a;
+  --color-bronce: #c8a66b;
+  --color-hueso: #efe8df;
+  --font-display: 'Anton', Impact, sans-serif;
+  --font-body: 'Archivo', Arial, sans-serif;
+}
+
+html { scroll-behavior: smooth; scroll-padding-top: 110px; }
+body { margin: 0; background: #000; color: #efe8df; font-family: 'Archivo', Arial, sans-serif; line-height: 1.55; }
+button, input, select { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+::selection { color: #000; background: #c8a66b; }
+
+@keyframes pulse-gold { 0%, 100% { box-shadow: 0 0 0 0 rgb(200 166 107 / 35%); } 50% { box-shadow: 0 0 0 9px rgb(200 166 107 / 0%); } }
+@keyframes rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+.animate-pulse-gold { animation: pulse-gold 2.2s infinite; }
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity .65s ease, transform .65s ease; }
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+summary { list-style: none; }
+summary::-webkit-details-marker { display: none; }
