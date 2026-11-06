@@ -24,7 +24,16 @@ export function Hero() {
       </div>
       <div className="mt-7 flex flex-wrap items-center gap-3 text-[9px] font-bold tracking-wider"><strong className="text-lg tracking-widest text-bronce">★★★★★</strong><span>LOS HOMBRES YA SE CUIDAN AQUÍ</span></div>
     </div>
-    <img src="/images/Isotipo_blanco.svg" alt="Gato esfinge de Primitivos con traje negro" width="1080" height="993" fetchPriority="high" className="pointer-events-none absolute bottom-0 right-[-9rem] hidden h-[78%] max-h-[700px] w-auto object-contain opacity-90 lg:block xl:right-[5%]" />
+
+    <img
+      src="/images/Isotipo_blanco.svg"
+      alt="Gato esfinge de Primitivos con traje negro"
+      width={1080}
+      height={993}
+      fetchPriority="high"
+      className="pointer-events-none absolute bottom-0 right-[-9rem] hidden h-[78%] max-h-[700px] w-auto object-contain opacity-90 lg:block xl:right-[5%]"
+    />
+
   </section>
 }
 
@@ -132,9 +141,10 @@ export function ProofSection() {
         {/* Imagen de Santiago */}
         <div className="flex h-full items-center justify-center p-3 sm:p-4">
           <img
-            src="../public/images/santiago.png"
+            src="/images/santiago.png"
             alt="Santiago, cliente de Primitivos"
             className="max-h-72 w-full rounded-sm object-contain sm:max-h-80"
+            loading="lazy"
           />
         </div>
 
@@ -803,11 +813,10 @@ export function BookingSection() {
                           setHoraSeleccionada(hora)
                           setSubmitError('')
                         }}
-                        className={`border px-2 py-3 text-xs font-bold transition ${
-                          horaSeleccionada === hora
-                            ? 'border-bronce bg-bronce text-black'
-                            : 'border-bronce/30 bg-white/[.03] text-hueso hover:border-bronce hover:text-bronce'
-                        }`}
+                        className={`border px-2 py-3 text-xs font-bold transition ${horaSeleccionada === hora
+                          ? 'border-bronce bg-bronce text-black'
+                          : 'border-bronce/30 bg-white/[.03] text-hueso hover:border-bronce hover:text-bronce'
+                          }`}
                       >
                         {formatTime(hora)}
                       </button>

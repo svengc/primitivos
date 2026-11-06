@@ -1,5 +1,8 @@
+
 export const WHATSAPP_NUMBER = '573106056276'
+
 export const OFFER = 'PRIMERA CITA CON 15% OFF'
+
 export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola, quiero reservar mi cita en Primitivos')}`
 
 export const services = [
@@ -8,14 +11,14 @@ export const services = [
     description: 'Manos impecables, limpieza precisa y cuidado en cada detalle.',
     time: '30 min',
     price: '$35.000',
-    img: '../public/images/manicure.png'
+    img: '/images/manicure.png',
   },
   {
     name: 'PEDICURA',
     description: 'Bienestar desde los pies. Limpieza profunda y cuidado que se nota.',
     time: '1 hora',
     price: '$35.000',
-    img: '../public/images/pedicure.png'
+    img: '/images/pedicure.png',
   },
   {
     name: 'COMBO',
@@ -24,9 +27,9 @@ export const services = [
     price: '$68.000',
     oldPrice: '$80.000',
     featured: true,
-    img: '../public/images/Combo.png'
+    img: '/images/Combo.png',
   },
-];
+]
 
 export const benefits = [
   { number: '01', title: '100% HECHO PARA HOMBRES', description: 'No adaptamos un spa femenino. Diseñamos uno para ti.' },
