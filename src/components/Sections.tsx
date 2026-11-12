@@ -607,25 +607,6 @@ export function BookingSection() {
             CUPOS LIMITADOS · VÁLIDA HASTA 31/11/2026
           </small>
         </div>
-
-        <div className="mt-5 flex gap-2">
-          {['DÍAS', 'HORAS', 'MIN'].map(unit => (
-            <div
-              key={unit}
-              className="min-w-16 border border-bronce/25 p-3 text-center"
-            >
-              <b className="block font-display text-3xl">00</b>
-
-              <span className="text-[8px] tracking-widest text-hueso/50">
-                {unit}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        <small className="mt-2 block text-[8px] text-hueso/50">
-          [ACTIVAR CON FECHA REAL]
-        </small>
       </Reveal>
 
       <Reveal className="border border-bronce/25 bg-black/60 p-5 sm:p-8">
