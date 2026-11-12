@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabase'
 
 export function Hero() {
   return <section id="inicio" className="relative flex min-h-[720px] items-center overflow-hidden bg-[radial-gradient(ellipse_at_75%_55%,#302315_0%,#100c08_38%,#000_72%)] px-5 pb-20 pt-36 sm:px-10 lg:min-h-[780px] lg:px-[9vw]">
-    <div className="relative z-10 max-w-2xl">
+    <div className="relative z-10 max-w-xl">
       <Kicker>EL ÚNICO SPA DE UÑAS HECHO PARA HOMBRES</Kicker>
       <h1 className="font-display text-[clamp(4rem,11vw,8.8rem)] leading-[.88]">TUS MANOS<br />HABLAN DE TI.<br /><span className="text-bronce">¿QUÉ DICEN?</span></h1>
       <p className="mt-7 max-w-lg text-sm leading-7 text-hueso/70 sm:text-base">Manicura y pedicura solo para hombres en Medellín. Atención privada, rápida y sin juicios.</p>
@@ -28,8 +28,8 @@ export function Hero() {
     <img
       src="/images/Isotipo_blanco.svg"
       alt="Gato esfinge de Primitivos con traje negro"
-      width={1080}
-      height={993}
+      width={1200}
+      height={100}
       fetchPriority="high"
       className="pointer-events-none absolute bottom-0 right-[-9rem] hidden h-[78%] max-h-[700px] w-auto object-contain opacity-90 lg:block xl:right-[5%]"
     />
