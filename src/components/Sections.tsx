@@ -28,8 +28,8 @@ export function Hero() {
     <img
       src="/images/Isotipo_blanco.svg"
       alt="Gato esfinge de Primitivos con traje negro"
-      width={1200}
-      height={100}
+      width={1080}
+      height={993}
       fetchPriority="high"
       className="pointer-events-none absolute bottom-0 right-[-9rem] hidden h-[78%] max-h-[700px] w-auto object-contain opacity-90 lg:block xl:right-[5%]"
     />
