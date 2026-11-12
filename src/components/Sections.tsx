@@ -507,7 +507,6 @@ export function BookingSection() {
           hora_inicio: `${horaSeleccionada}:00`,
           hora_fin: `${horaFin}:00`,
           duracion_minutos: duracion,
-          estado: 'Pendiente',
         })
 
       if (error) {

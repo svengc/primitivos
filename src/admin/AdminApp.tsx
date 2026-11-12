@@ -246,17 +246,17 @@ export default function AdminApp() {
       .update({ estado: nuevoEstado })
       .eq('id', reserva.id)
       .select(`
-        id,
-        nombre,
-        whatsapp,
-        servicio,
-        fecha,
-        hora_inicio,
-        hora_fin,
-        duracion_minutos,
-        estado,
-        created_at
-      `)
+  id,
+  nombre,
+  whatsapp,
+  servicio,
+  fecha,
+  hora_inicio,
+  hora_fin,
+  duracion_minutos,
+  estado,
+  created_at
+`)
       .single()
 
     if (error) {
@@ -563,11 +563,10 @@ export default function AdminApp() {
               key={opcion}
               type="button"
               onClick={() => setFiltro(opcion)}
-              className={`border px-4 py-2 text-[10px] font-bold tracking-wider transition ${
-                filtro === opcion
+              className={`border px-4 py-2 text-[10px] font-bold tracking-wider transition ${filtro === opcion
                   ? 'border-[#D6A45C] bg-[#D6A45C] text-black'
                   : 'border-[#95704D]/40 text-white/60 hover:border-[#D6A45C]'
-              }`}
+                }`}
             >
               {opcion.toUpperCase()}
             </button>
@@ -635,15 +634,14 @@ export default function AdminApp() {
                 </div>
 
                 <span
-                  className={`border px-3 py-2 text-[9px] font-bold tracking-widest ${
-                    reserva.estado === 'Confirmada'
+                  className={`border px-3 py-2 text-[9px] font-bold tracking-widest ${reserva.estado === 'Confirmada'
                       ? 'border-green-500/40 text-green-400'
                       : reserva.estado === 'Pendiente'
                         ? 'border-[#D6A45C]/40 text-[#D6A45C]'
                         : reserva.estado === 'Rechazada'
                           ? 'border-red-500/40 text-red-400'
                           : 'border-white/20 text-white/40'
-                  }`}
+                    }`}
                 >
                   {reserva.estado.toUpperCase()}
                 </span>
@@ -732,15 +730,15 @@ export default function AdminApp() {
 
                 {(reserva.estado === 'Rechazada' ||
                   reserva.estado === 'Cancelada') && (
-                  <button
-                    type="button"
-                    disabled={updatingId !== null}
-                    onClick={() => cambiarEstado(reserva, 'Pendiente')}
-                    className="border border-[#D6A45C]/50 px-4 py-3 text-[9px] font-bold tracking-wider text-[#D6A45C] disabled:opacity-40"
-                  >
-                    REACTIVAR RESERVA
-                  </button>
-                )}
+                    <button
+                      type="button"
+                      disabled={updatingId !== null}
+                      onClick={() => cambiarEstado(reserva, 'Pendiente')}
+                      className="border border-[#D6A45C]/50 px-4 py-3 text-[9px] font-bold tracking-wider text-[#D6A45C] disabled:opacity-40"
+                    >
+                      REACTIVAR RESERVA
+                    </button>
+                  )}
 
                 {updatingId === reserva.id && (
                   <span className="self-center text-[10px] text-[#D6A45C]">
