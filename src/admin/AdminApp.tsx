@@ -25,6 +25,20 @@ type Reserva = {
 
 type FiltroReserva = 'Todas' | EstadoReserva
 
+const obtenerFechaBogota = () => {
+  const partes = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Bogota',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date())
+
+  const obtener = (tipo: string) =>
+    partes.find(parte => parte.type === tipo)?.value ?? ''
+
+  return `${obtener('year')}-${obtener('month')}-${obtener('day')}`
+}
+
 export default function AdminApp() {
   const [user, setUser] = useState<User | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
@@ -43,6 +57,7 @@ export default function AdminApp() {
   const [actionError, setActionError] = useState('')
 
   const [filtro, setFiltro] = useState<FiltroReserva>('Todas')
+  const [fechaSeleccionada, setFechaSeleccionada] = useState(obtenerFechaBogota)
   const [updatingId, setUpdatingId] = useState<string | null>(null)
 
   // ==========================================
@@ -246,17 +261,17 @@ export default function AdminApp() {
       .update({ estado: nuevoEstado })
       .eq('id', reserva.id)
       .select(`
-  id,
-  nombre,
-  whatsapp,
-  servicio,
-  fecha,
-  hora_inicio,
-  hora_fin,
-  duracion_minutos,
-  estado,
-  created_at
-`)
+        id,
+        nombre,
+        whatsapp,
+        servicio,
+        fecha,
+        hora_inicio,
+        hora_fin,
+        duracion_minutos,
+        estado,
+        created_at
+      `)
       .single()
 
     if (error) {
@@ -310,20 +325,29 @@ export default function AdminApp() {
   }
 
   // ==========================================
-  // 8. FILTRAR RESERVAS
+  // 8. FILTRAR RESERVAS POR FECHA Y ESTADO
   // ==========================================
 
-  const reservasFiltradas = reservas.filter(reserva => {
+  const reservasDelDia = reservas.filter(
+    reserva => reserva.fecha === fechaSeleccionada
+  )
+
+  const reservasFiltradas = reservasDelDia.filter(reserva => {
     return filtro === 'Todas' || reserva.estado === filtro
   })
 
-  const pendientes = reservas.filter(
+  const pendientes = reservasDelDia.filter(
     reserva => reserva.estado === 'Pendiente'
   ).length
 
-  const confirmadas = reservas.filter(
+  const confirmadas = reservasDelDia.filter(
     reserva => reserva.estado === 'Confirmada'
   ).length
+
+  const volverAHoy = () => {
+    setFechaSeleccionada(obtenerFechaBogota())
+    setFiltro('Todas')
+  }
 
   // ==========================================
   // 9. PANTALLA DE CARGA
@@ -509,38 +533,68 @@ export default function AdminApp() {
 
       </header>
 
-      {/* RESUMEN */}
+      {/* RESUMEN DEL DÍA */}
 
-      <section className="mb-10 grid gap-4 sm:grid-cols-3">
+      <section className="mb-10">
 
-        <div className="border border-[#95704D]/30 bg-[#17120d] p-6">
-          <p className="text-[10px] tracking-widest text-white/50">
-            TOTAL DE RESERVAS
-          </p>
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-[10px] tracking-widest text-[#D6A45C]">
+              AGENDA DIARIA
+            </p>
 
-          <strong className="mt-3 block font-display text-4xl">
-            {reservas.length}
-          </strong>
+            <h2 className="mt-2 font-display text-2xl">
+              {fechaSeleccionada === obtenerFechaBogota()
+                ? 'CITAS DE HOY'
+                : 'CITAS DEL DÍA'}
+            </h2>
+
+            <p className="mt-1 text-xs text-white/40">
+              {formatFecha(fechaSeleccionada)}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={volverAHoy}
+            className="border border-[#D6A45C]/50 px-4 py-3 text-[10px] font-bold tracking-widest text-[#D6A45C] transition hover:bg-[#D6A45C] hover:text-black"
+          >
+            VER HOY
+          </button>
         </div>
 
-        <div className="border border-[#95704D]/30 bg-[#17120d] p-6">
-          <p className="text-[10px] tracking-widest text-white/50">
-            PENDIENTES
-          </p>
+        <div className="grid gap-4 sm:grid-cols-3">
 
-          <strong className="mt-3 block font-display text-4xl text-[#D6A45C]">
-            {pendientes}
-          </strong>
-        </div>
+          <div className="border border-[#95704D]/30 bg-[#17120d] p-6">
+            <p className="text-[10px] tracking-widest text-white/50">
+              TOTAL DE CITAS
+            </p>
 
-        <div className="border border-[#95704D]/30 bg-[#17120d] p-6">
-          <p className="text-[10px] tracking-widest text-white/50">
-            CONFIRMADAS
-          </p>
+            <strong className="mt-3 block font-display text-4xl">
+              {reservasDelDia.length}
+            </strong>
+          </div>
 
-          <strong className="mt-3 block font-display text-4xl text-green-400">
-            {confirmadas}
-          </strong>
+          <div className="border border-[#95704D]/30 bg-[#17120d] p-6">
+            <p className="text-[10px] tracking-widest text-white/50">
+              PENDIENTES
+            </p>
+
+            <strong className="mt-3 block font-display text-4xl text-[#D6A45C]">
+              {pendientes}
+            </strong>
+          </div>
+
+          <div className="border border-[#95704D]/30 bg-[#17120d] p-6">
+            <p className="text-[10px] tracking-widest text-white/50">
+              CONFIRMADAS
+            </p>
+
+            <strong className="mt-3 block font-display text-4xl text-green-400">
+              {confirmadas}
+            </strong>
+          </div>
+
         </div>
 
       </section>
@@ -553,6 +607,42 @@ export default function AdminApp() {
           GESTIÓN DE RESERVAS
         </h2>
 
+        {/* FILTRO POR FECHA */}
+
+        <div className="mb-5 flex flex-wrap items-end gap-4">
+
+          <label className="grid gap-2">
+            <span className="text-[10px] font-bold tracking-widest text-[#D6A45C]">
+              CONSULTAR CITAS POR FECHA
+            </span>
+
+            <input
+              type="date"
+              value={fechaSeleccionada}
+              onChange={event => {
+                setFechaSeleccionada(event.target.value)
+                setFiltro('Todas')
+              }}
+              className="h-11 border border-[#95704D]/40 bg-[#17120d] px-4 text-sm text-white outline-none focus:border-[#D6A45C] [color-scheme:dark]"
+            />
+          </label>
+
+          <button
+            type="button"
+            onClick={volverAHoy}
+            className="h-11 border border-[#95704D]/40 px-5 text-[10px] font-bold tracking-widest text-white/70 transition hover:border-[#D6A45C] hover:text-[#D6A45C]"
+          >
+            RESTABLECER FECHA
+          </button>
+
+        </div>
+
+        {/* FILTRO POR ESTADO */}
+
+        <p className="mb-3 text-[10px] font-bold tracking-widest text-[#D6A45C]">
+          FILTRAR POR ESTADO
+        </p>
+
         <div className="flex flex-wrap gap-2">
 
           {(
@@ -563,10 +653,11 @@ export default function AdminApp() {
               key={opcion}
               type="button"
               onClick={() => setFiltro(opcion)}
-              className={`border px-4 py-2 text-[10px] font-bold tracking-wider transition ${filtro === opcion
+              className={`border px-4 py-2 text-[10px] font-bold tracking-wider transition ${
+                filtro === opcion
                   ? 'border-[#D6A45C] bg-[#D6A45C] text-black'
                   : 'border-[#95704D]/40 text-white/60 hover:border-[#D6A45C]'
-                }`}
+              }`}
             >
               {opcion.toUpperCase()}
             </button>
@@ -588,7 +679,7 @@ export default function AdminApp() {
         </div>
       )}
 
-      {/* LISTADO */}
+      {/* LISTADO DE RESERVAS */}
 
       {loadingReservas ? (
 
@@ -601,11 +692,11 @@ export default function AdminApp() {
         <div className="border border-[#95704D]/30 bg-[#17120d] p-10 text-center">
 
           <p className="font-display text-2xl">
-            NO HAY RESERVAS
+            NO HAY CITAS
           </p>
 
           <p className="mt-3 text-xs text-white/40">
-            No encontramos reservas para este filtro.
+            No encontramos citas para esta fecha y filtro.
           </p>
 
         </div>
@@ -634,14 +725,15 @@ export default function AdminApp() {
                 </div>
 
                 <span
-                  className={`border px-3 py-2 text-[9px] font-bold tracking-widest ${reserva.estado === 'Confirmada'
+                  className={`border px-3 py-2 text-[9px] font-bold tracking-widest ${
+                    reserva.estado === 'Confirmada'
                       ? 'border-green-500/40 text-green-400'
                       : reserva.estado === 'Pendiente'
                         ? 'border-[#D6A45C]/40 text-[#D6A45C]'
                         : reserva.estado === 'Rechazada'
                           ? 'border-red-500/40 text-red-400'
                           : 'border-white/20 text-white/40'
-                    }`}
+                  }`}
                 >
                   {reserva.estado.toUpperCase()}
                 </span>
@@ -730,15 +822,15 @@ export default function AdminApp() {
 
                 {(reserva.estado === 'Rechazada' ||
                   reserva.estado === 'Cancelada') && (
-                    <button
-                      type="button"
-                      disabled={updatingId !== null}
-                      onClick={() => cambiarEstado(reserva, 'Pendiente')}
-                      className="border border-[#D6A45C]/50 px-4 py-3 text-[9px] font-bold tracking-wider text-[#D6A45C] disabled:opacity-40"
-                    >
-                      REACTIVAR RESERVA
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    disabled={updatingId !== null}
+                    onClick={() => cambiarEstado(reserva, 'Pendiente')}
+                    className="border border-[#D6A45C]/50 px-4 py-3 text-[9px] font-bold tracking-wider text-[#D6A45C] disabled:opacity-40"
+                  >
+                    REACTIVAR RESERVA
+                  </button>
+                )}
 
                 {updatingId === reserva.id && (
                   <span className="self-center text-[10px] text-[#D6A45C]">
