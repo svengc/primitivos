@@ -60,8 +60,10 @@ export default function AdminApp() {
   const [reservasError, setReservasError] = useState('')
   const [actionError, setActionError] = useState('')
 
+  // Filtros: por defecto se muestran todas las citas.
   const [filtro, setFiltro] = useState<FiltroReserva>('Todas')
-  const [fechaSeleccionada, setFechaSeleccionada] = useState(obtenerFechaBogota)
+  const [fechaSeleccionada, setFechaSeleccionada] = useState('')
+
   const [updatingId, setUpdatingId] = useState<string | null>(null)
 
   // ==========================================
@@ -185,6 +187,7 @@ export default function AdminApp() {
 
     if (error) {
       console.error('Error consultando reservas:', error)
+
       setReservasError(error.message)
       setLoadingReservas(false)
       return
@@ -333,55 +336,61 @@ export default function AdminApp() {
   }
 
   // ==========================================
-  // 8. FILTRAR RESERVAS POR FECHA Y ESTADO
+  // 8. FILTRAR RESERVAS POR FECHA
   // ==========================================
 
-  // Todas las citas de la fecha seleccionada.
-  // Este conjunto NO depende del filtro de estado.
+  // Sin fecha seleccionada se muestran todas las citas.
+  // Con fecha seleccionada se muestran solamente las de ese día.
 
-  const reservasDelDia = reservas.filter(
-    reserva => reserva.fecha === fechaSeleccionada
-  )
+  const reservasPorFecha = fechaSeleccionada
+    ? reservas.filter(
+        reserva => reserva.fecha === fechaSeleccionada
+      )
+    : reservas
 
-  // Listado según fecha y estado seleccionado.
+  // ==========================================
+  // 9. FILTRAR RESERVAS POR ESTADO
+  // ==========================================
 
-  const reservasFiltradas = reservasDelDia.filter(reserva => {
+  const reservasFiltradas = reservasPorFecha.filter(reserva => {
     return filtro === 'Todas' || reserva.estado === filtro
   })
 
   // ==========================================
-  // 9. CONTADORES INDEPENDIENTES
+  // 10. CONTADORES INDEPENDIENTES
   // ==========================================
 
-  const totalCitas = reservasDelDia.length
+  // Los contadores no dependen del filtro de estado.
 
-  const pendientes = reservasDelDia.filter(
+  const totalCitas = reservasPorFecha.length
+
+  const pendientes = reservasPorFecha.filter(
     reserva => reserva.estado === 'Pendiente'
   ).length
 
-  const confirmadas = reservasDelDia.filter(
+  const confirmadas = reservasPorFecha.filter(
     reserva => reserva.estado === 'Confirmada'
   ).length
 
-  const rechazadas = reservasDelDia.filter(
+  const rechazadas = reservasPorFecha.filter(
     reserva => reserva.estado === 'Rechazada'
   ).length
 
-  const canceladas = reservasDelDia.filter(
+  const canceladas = reservasPorFecha.filter(
     reserva => reserva.estado === 'Cancelada'
   ).length
 
   // ==========================================
-  // 10. RESTABLECER FECHA
+  // 11. RESTABLECER FILTROS
   // ==========================================
 
   const volverAHoy = () => {
-    setFechaSeleccionada(obtenerFechaBogota())
+    setFechaSeleccionada('')
     setFiltro('Todas')
   }
 
   // ==========================================
-  // 11. PANTALLA DE CARGA
+  // 12. PANTALLA DE CARGA
   // ==========================================
 
   if (loading) {
@@ -395,7 +404,7 @@ export default function AdminApp() {
   }
 
   // ==========================================
-  // 12. PANTALLA DE INICIO DE SESIÓN
+  // 13. PANTALLA DE INICIO DE SESIÓN
   // ==========================================
 
   if (!user) {
@@ -481,7 +490,7 @@ export default function AdminApp() {
   }
 
   // ==========================================
-  // 13. VALIDAR ACCESO ADMINISTRATIVO
+  // 14. VALIDAR ACCESO ADMINISTRATIVO
   // ==========================================
 
   if (checkingAccess) {
@@ -519,7 +528,7 @@ export default function AdminApp() {
   }
 
   // ==========================================
-  // 14. PANEL ADMINISTRATIVO
+  // 15. PANEL ADMINISTRATIVO
   // ==========================================
 
   return (
@@ -566,7 +575,7 @@ export default function AdminApp() {
 
       </header>
 
-      {/* RESUMEN DEL DÍA */}
+      {/* RESUMEN DE CITAS */}
 
       <section className="mb-10">
 
@@ -578,13 +587,15 @@ export default function AdminApp() {
             </p>
 
             <h2 className="mt-2 font-display text-2xl">
-              {fechaSeleccionada === obtenerFechaBogota()
-                ? 'CITAS DE HOY'
-                : 'CITAS DEL DÍA'}
+              {fechaSeleccionada
+                ? 'CITAS DEL DÍA'
+                : 'TODAS LAS CITAS'}
             </h2>
 
             <p className="mt-1 text-xs text-white/40">
-              {formatFecha(fechaSeleccionada)}
+              {fechaSeleccionada
+                ? formatFecha(fechaSeleccionada)
+                : 'Mostrando todas las fechas'}
             </p>
           </div>
 
@@ -593,7 +604,7 @@ export default function AdminApp() {
             onClick={volverAHoy}
             className="border border-[#D6A45C]/50 px-4 py-3 text-[10px] font-bold tracking-widest text-[#D6A45C] transition hover:bg-[#D6A45C] hover:text-black"
           >
-            VER HOY
+            VER TODAS LAS CITAS
           </button>
 
         </div>
@@ -602,7 +613,7 @@ export default function AdminApp() {
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
 
-          {/* TOTAL DE CITAS */}
+          {/* TOTAL */}
 
           <div className="border border-[#95704D]/30 bg-[#17120d] p-6">
             <p className="text-[10px] tracking-widest text-white/50">
@@ -666,7 +677,7 @@ export default function AdminApp() {
 
       </section>
 
-      {/* GESTIÓN DE RESERVAS Y FILTROS */}
+      {/* GESTIÓN DE RESERVAS */}
 
       <section className="mb-6">
 
@@ -687,8 +698,6 @@ export default function AdminApp() {
               type="date"
               value={fechaSeleccionada}
               onChange={event => {
-                if (!event.target.value) return
-
                 setFechaSeleccionada(event.target.value)
                 setFiltro('Todas')
               }}
@@ -701,7 +710,7 @@ export default function AdminApp() {
             onClick={volverAHoy}
             className="h-11 border border-[#95704D]/40 px-5 text-[10px] font-bold tracking-widest text-white/70 transition hover:border-[#D6A45C] hover:text-[#D6A45C]"
           >
-            RESTABLECER FECHA
+            RESTABLECER FILTROS
           </button>
 
         </div>
@@ -811,7 +820,7 @@ export default function AdminApp() {
 
               </div>
 
-              {/* DETALLES DE LA RESERVA */}
+              {/* DETALLES */}
 
               <div className="mb-6 grid gap-4 text-xs sm:grid-cols-2 lg:grid-cols-4">
 
