@@ -25,6 +25,10 @@ type Reserva = {
 
 type FiltroReserva = 'Todas' | EstadoReserva
 
+// ==========================================
+// FECHA ACTUAL DE COLOMBIA
+// ==========================================
+
 const obtenerFechaBogota = () => {
   const partes = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'America/Bogota',
@@ -127,14 +131,17 @@ export default function AdminApp() {
 
       if (error) {
         console.error('Error validando administrador:', error)
+
         setAccessError(
           'No fue posible verificar tus permisos de administrador.'
         )
+
         setIsAdmin(false)
       } else if (!data) {
         setAccessError(
           'Tu usuario no tiene permisos para acceder al panel administrativo.'
         )
+
         setIsAdmin(false)
       } else {
         setIsAdmin(true)
@@ -220,6 +227,7 @@ export default function AdminApp() {
           ? 'Correo o contraseña incorrectos.'
           : error.message
       )
+
       setLoading(false)
     } else {
       setPassword('')
@@ -328,13 +336,24 @@ export default function AdminApp() {
   // 8. FILTRAR RESERVAS POR FECHA Y ESTADO
   // ==========================================
 
+  // Todas las citas de la fecha seleccionada.
+  // Este conjunto NO depende del filtro de estado.
+
   const reservasDelDia = reservas.filter(
     reserva => reserva.fecha === fechaSeleccionada
   )
 
+  // Listado según fecha y estado seleccionado.
+
   const reservasFiltradas = reservasDelDia.filter(reserva => {
     return filtro === 'Todas' || reserva.estado === filtro
   })
+
+  // ==========================================
+  // 9. CONTADORES INDEPENDIENTES
+  // ==========================================
+
+  const totalCitas = reservasDelDia.length
 
   const pendientes = reservasDelDia.filter(
     reserva => reserva.estado === 'Pendiente'
@@ -344,13 +363,25 @@ export default function AdminApp() {
     reserva => reserva.estado === 'Confirmada'
   ).length
 
+  const rechazadas = reservasDelDia.filter(
+    reserva => reserva.estado === 'Rechazada'
+  ).length
+
+  const canceladas = reservasDelDia.filter(
+    reserva => reserva.estado === 'Cancelada'
+  ).length
+
+  // ==========================================
+  // 10. RESTABLECER FECHA
+  // ==========================================
+
   const volverAHoy = () => {
     setFechaSeleccionada(obtenerFechaBogota())
     setFiltro('Todas')
   }
 
   // ==========================================
-  // 9. PANTALLA DE CARGA
+  // 11. PANTALLA DE CARGA
   // ==========================================
 
   if (loading) {
@@ -364,7 +395,7 @@ export default function AdminApp() {
   }
 
   // ==========================================
-  // 10. PANTALLA DE INICIO DE SESIÓN
+  // 12. PANTALLA DE INICIO DE SESIÓN
   // ==========================================
 
   if (!user) {
@@ -450,7 +481,7 @@ export default function AdminApp() {
   }
 
   // ==========================================
-  // 11. VALIDAR ACCESO ADMINISTRATIVO
+  // 13. VALIDAR ACCESO ADMINISTRATIVO
   // ==========================================
 
   if (checkingAccess) {
@@ -488,11 +519,13 @@ export default function AdminApp() {
   }
 
   // ==========================================
-  // 12. PANEL ADMINISTRATIVO
+  // 14. PANEL ADMINISTRATIVO
   // ==========================================
 
   return (
     <main className="min-h-screen bg-[#080604] px-4 py-8 text-[#F5F0E8] sm:px-8 lg:px-12">
+
+      {/* ENCABEZADO */}
 
       <header className="mb-10 flex flex-wrap items-center justify-between gap-5 border-b border-[#95704D]/30 pb-6">
 
@@ -538,6 +571,7 @@ export default function AdminApp() {
       <section className="mb-10">
 
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+
           <div>
             <p className="text-[10px] tracking-widest text-[#D6A45C]">
               AGENDA DIARIA
@@ -561,9 +595,14 @@ export default function AdminApp() {
           >
             VER HOY
           </button>
+
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-3">
+        {/* CINCO CONTADORES */}
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+
+          {/* TOTAL DE CITAS */}
 
           <div className="border border-[#95704D]/30 bg-[#17120d] p-6">
             <p className="text-[10px] tracking-widest text-white/50">
@@ -571,9 +610,11 @@ export default function AdminApp() {
             </p>
 
             <strong className="mt-3 block font-display text-4xl">
-              {reservasDelDia.length}
+              {totalCitas}
             </strong>
           </div>
+
+          {/* PENDIENTES */}
 
           <div className="border border-[#95704D]/30 bg-[#17120d] p-6">
             <p className="text-[10px] tracking-widest text-white/50">
@@ -585,6 +626,8 @@ export default function AdminApp() {
             </strong>
           </div>
 
+          {/* CONFIRMADAS */}
+
           <div className="border border-[#95704D]/30 bg-[#17120d] p-6">
             <p className="text-[10px] tracking-widest text-white/50">
               CONFIRMADAS
@@ -595,11 +638,35 @@ export default function AdminApp() {
             </strong>
           </div>
 
+          {/* RECHAZADAS */}
+
+          <div className="border border-[#95704D]/30 bg-[#17120d] p-6">
+            <p className="text-[10px] tracking-widest text-white/50">
+              RECHAZADAS
+            </p>
+
+            <strong className="mt-3 block font-display text-4xl text-red-400">
+              {rechazadas}
+            </strong>
+          </div>
+
+          {/* CANCELADAS */}
+
+          <div className="border border-[#95704D]/30 bg-[#17120d] p-6">
+            <p className="text-[10px] tracking-widest text-white/50">
+              CANCELADAS
+            </p>
+
+            <strong className="mt-3 block font-display text-4xl text-white/50">
+              {canceladas}
+            </strong>
+          </div>
+
         </div>
 
       </section>
 
-      {/* FILTROS */}
+      {/* GESTIÓN DE RESERVAS Y FILTROS */}
 
       <section className="mb-6">
 
@@ -620,6 +687,8 @@ export default function AdminApp() {
               type="date"
               value={fechaSeleccionada}
               onChange={event => {
+                if (!event.target.value) return
+
                 setFechaSeleccionada(event.target.value)
                 setFiltro('Todas')
               }}
@@ -712,6 +781,8 @@ export default function AdminApp() {
               className="border border-[#95704D]/30 bg-[#17120d] p-5 sm:p-6"
             >
 
+              {/* INFORMACIÓN PRINCIPAL */}
+
               <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
 
                 <div>
@@ -739,6 +810,8 @@ export default function AdminApp() {
                 </span>
 
               </div>
+
+              {/* DETALLES DE LA RESERVA */}
 
               <div className="mb-6 grid gap-4 text-xs sm:grid-cols-2 lg:grid-cols-4">
 
@@ -783,7 +856,7 @@ export default function AdminApp() {
 
               </div>
 
-              {/* ACCIONES */}
+              {/* ACCIONES ADMINISTRATIVAS */}
 
               <div className="flex flex-wrap gap-2 border-t border-[#95704D]/20 pt-5">
 
@@ -847,6 +920,8 @@ export default function AdminApp() {
         </section>
 
       )}
+
+      {/* PIE DE PÁGINA */}
 
       <footer className="mt-12 border-t border-[#95704D]/20 py-6 text-center text-[9px] tracking-widest text-white/30">
         PRIMITIVOS · PANEL ADMINISTRATIVO
